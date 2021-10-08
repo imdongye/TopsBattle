@@ -17,7 +17,7 @@ class DyTop {
   DyTop(PVector _pos) {
     topImg = createGraphics(topRad*2, topRad*2);
     //set top image
-    TopTools.setTopGrapics03(topImg);
+    TopTools.setTopGrapics02(topImg);
     pos.set(_pos);
   }
   
@@ -42,7 +42,6 @@ class DyTop {
   void update() {
     posUpdate();
     drawUpdate();
-    println(acc.x+" "+acc.y);
   }
   void setUserForce(float x, float y) {
     acc.x = x;

@@ -1,0 +1,7 @@
+Tops Controller
+Y1	Y1 position	3	SLIDER	y	0	1.0	0.0
+X1	X1 position	3	SLIDER	x	0	1.0	0.0
+DASH1	dash top1	1	BUTTON	0	0	0.0	0.0
+Y2	Y1 position	3	SLIDER	y	0	1.0	0.0
+X2	X1 position	3	SLIDER	x	0	1.0	0.0
+DASH2	dash top2	1	BUTTON	1	0	0.0	0.0

@@ -1,12 +1,45 @@
+import org.gamecontrolplus.gui.*;
+import org.gamecontrolplus.*;
+import net.java.games.input.*;
+
+ControlIO control;
+ControlDevice stick;
+
 DyTop top;
 TopTools topTools;
 
-int inputX;
-int inputY;
+float inputX1;
+float inputY1;
+float inputX2;
 
 void setup() {
   size(1200, 980, P2D);
+  surface.setTitle("팽이게임");
+
+  control = ControlIO.getInstance(this);
+  stick = control.filter(GCP.STICK).getMatchedDevice("joystick");
+  if (stick == null) {
+    println("No suitable device configured");
+    System.exit(-1); // End the program NOW!
+  }
+  println(stick);
+  stick.setTolerance(0.2);
   top = new DyTop(new PVector(width/2, height/2));
+}
+
+void updateGamePadInput() {
+  if (stick != null) {
+    inputX1 = map(stick.getSlider(1).getValue(), -1, 1, -1, 1);
+    inputY1 = map(stick.getSlider(0).getValue(), -1, 1, -1, 1);
+    // limit level : 0.02
+    top.setUserForce(inputX, inputY);
+    if(stick.getButton(4).pressed()) {
+      println("dash");
+    }
+    if(stick.getButton(5).pressed()) {
+      println("dash");
+    }
+  }
 }
 
 void keyPressed() {
@@ -53,5 +86,6 @@ void keyReleased() {
 
 void draw() {
   background(255);
+  updateGamePadInput();
   top.update();
 }
