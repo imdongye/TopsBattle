@@ -10,25 +10,17 @@ TopTools topTools;
 
 PVector inputP1 = new PVector(0, 0);
 PVector inputP2 = new PVector(0, 0);
-int keyMX1, keyMY1, keyMX2, keyMY2;
 TopsBoard topsBoard;
 
 void setup() {
-  size(1200, 980, P2D);
+  size(1400, 900, P2D);
   surface.setTitle("팽이게임");
 
   control = ControlIO.getInstance(this);
-  stick = control.filter(GCP.GAMEPAD).getMatchedDevice("joystick");
-  if (stick == null) {
-    println("No suitable device configured");
-    System.exit(-1); // End the program NOW!
-  }
-  println(stick);
-  stick.setTolerance(0.2);
+  stick = null;
   top[0] = new DyTop(0, new PVector(width/4, height/2));
   top[1] = new DyTop(1, new PVector(width/4*3, height/2));
   topsBoard = new TopsBoard(height/2);
-  stick.getButton(4).plug(this, "dashPressed", ControlIO.ON_PRESS);
 }
 
 void updateGamePadInput() {
@@ -46,7 +38,16 @@ void updateGamePadInput() {
 void dashPressed() {
   println("dash");
 }
-
+void setStick() {
+  stick = control.filter(GCP.GAMEPAD).getMatchedDevice("joystick");
+  if (stick == null) {
+    println("No suitable device configured");
+    System.exit(-1); // End the program NOW!
+  }
+  println(stick);
+  stick.setTolerance(0.2);
+  stick.getButton(4).plug(this, "dashPressed", ControlIO.ON_PRESS);
+}
 void keyPressed() {
   if (key == CODED) {
     if (keyCode == UP) {
@@ -61,7 +62,9 @@ void keyPressed() {
   } else {
     if (key == 'x') {
       if ( stick != null) stick = null;
-      else stick = control.filter(GCP.GAMEPAD).getMatchedDevice("joystick");
+      else {
+        setStick();
+      }
     }
     if (key == 'w') {
       inputP1.y = -1;
