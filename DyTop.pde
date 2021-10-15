@@ -1,4 +1,5 @@
 class DyTop {
+  final int id;
   PGraphics topImg = null;
   PVector pos = new PVector();
   PVector vel = new PVector();
@@ -14,10 +15,11 @@ class DyTop {
 
   float rotSpd = 0.21;
 
-  DyTop(PVector _pos) {
+  DyTop(int _id, PVector _pos) {
+    id = _id;
     topImg = createGraphics(topRad*2, topRad*2);
     //set top image
-    TopTools.setTopGrapics02(topImg);
+    TopTools.setTopGrapics01(topImg);
     pos.set(_pos);
   }
   
@@ -34,14 +36,17 @@ class DyTop {
     pushMatrix();
     translate(pos.x, pos.y);
     rotate(rot);
-
-    image(topImg, -topRad, -topRad);
+    imageMode(CENTER);
+    image(topImg, 0, 0);
 
     popMatrix();
   }
   void update() {
     posUpdate();
     drawUpdate();
+  }
+  void dash() {
+    println(id);
   }
   void setUserForce(float x, float y) {
     acc.x = x;

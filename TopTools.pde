@@ -1,4 +1,5 @@
 public interface TopTools {
+
   public static void setTopGrapics00(PGraphics pg) {
     int tw = pg.width;
     int th = pg.height;
@@ -178,7 +179,7 @@ public interface TopTools {
 
 
   public static void setTopGrapics03(PGraphics pg) {
-    int t = (int)(pg.width*0.6);  
+    int t = (int)(pg.width*0.6);
     pg.beginDraw();
     pg.pushMatrix();
     pg.translate(pg.width/2, pg.width/2);
@@ -204,8 +205,55 @@ public interface TopTools {
     pg.popMatrix();
     pg.endDraw();
   }
+  public static void setTopGrapics04(PGraphics pg) {
+    int t = pg.width/5+(int)(pg.width*0.047);
 
-  public static void drawPartOfTop(PGraphics pg, float t) {
+    pg.beginDraw();
+    pg.pushMatrix();
+    pg.translate(pg.width/2, pg.height/2);
+    drawPartOfTop1(pg, t);
+    pg.rotate(PI/3);
+    drawPartOfTop1(pg, t);
+    pg.rotate(PI/3);
+    drawPartOfTop1(pg, t);
+    pg.rotate(PI/3);
+    drawPartOfTop1(pg, t);
+    pg.rotate(PI/3);
+    drawPartOfTop1(pg, t);
+    pg.rotate(PI/3);
+    drawPartOfTop1(pg, t);
+    pg.fill(0, 80, 0);
+    pg.ellipse(0, 0, 2.8*t, 2.8*t);
+    pg.fill(255);
+    pg.ellipse(0, 0, t/3, t/3);
+
+
+
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    drawPartOfTop2(pg, t);
+    pg.rotate(PI/5);
+    pg.popMatrix();
+    pg.endDraw();
+  }
+
+  private static void drawPartOfTop(PGraphics pg, float t) {
     pg.fill(255, 0, 0);
     pg.beginShape();
     pg.strokeWeight(2);
@@ -246,4 +294,40 @@ public interface TopTools {
     pg.vertex(t/16, -t/16);
     pg.vertex(t/18, -t/16);
   }
+  private static void drawPartOfTop1(PGraphics pg, int t) {
+
+    pg.strokeWeight(4);
+
+    pg.fill(100, 200, 100);
+
+    pg.beginShape(QUAD);
+    pg.vertex(-t/2.0, -2*t);
+    pg.vertex(t/2.0, -1.8*t);
+    pg.vertex(t/2.5, -t*1.3);
+    pg.vertex(-t/3, -t*1.3);
+    pg.endShape();
+    //
+    pg.fill(0);
+    pg.beginShape();
+    pg.vertex(0, -1.8*t);
+    pg.vertex(-t/5, -1.5*t);
+    pg.vertex(t/5, -1.5*t);
+    pg.endShape(CLOSE);
+    pg.strokeWeight(8);
+    //
+  }
+
+  private static void drawPartOfTop2(PGraphics pg, float t) {
+    pg.fill(255);
+    pg.strokeWeight(6);
+    pg.fill(40, 200, 50);
+    pg.beginShape();
+    pg.curveVertex(0.4*t, 0.4*t);
+    pg.curveVertex(0.3*t, 0.3*t);
+    pg.curveVertex(t, 0.8*t);
+    pg.curveVertex(t, 2*t);
+    pg.endShape(CLOSE);
+  }
+  
+  
 }
