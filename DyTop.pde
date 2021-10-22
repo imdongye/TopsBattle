@@ -12,7 +12,7 @@ class DyTop {
   float risistance = 1;
   float dashTime = 0.15;
   float rot = 0;
-
+  float mass = 1;
   float rotSpd = 0.21;
 
   DyTop(int _id, PVector _pos) {
@@ -28,9 +28,35 @@ class DyTop {
     if (vel.mag() > velMagLimit) {
       vel.setMag(velMagLimit);
     }
-    pos.x = constrain(pos.x + vel.x, topRad, width-topRad);
-    pos.y = constrain(pos.y + vel.y, topRad, height- topRad);
     rot += rotSpd;
+    pos.add(vel);
+    fencingPos();
+  }
+  
+  void collidesWidth(DyTop top2) {
+    PVector cV = top2.pos.copy();
+    cV.sub(pos);
+    PVector cUV = cV.normalize().copy();
+    PVector rV = cUV.mult(cUV.dot(vel));
+    rV.mult(2);
+    println(rV);
+    vel.add(rV.mult(2));
+  }
+  
+  private void fencingPos() {
+    float boardFence = boardRad - topRad/2;
+    
+    PVector dirVec = pos.copy();
+    dirVec.sub(centerPos);
+    
+    if(dirVec.mag() > boardFence) {
+      dirVec.setMag(boardFence);
+      dirVec.add(centerPos);
+      pos = dirVec.copy();
+    } 
+    
+    //pos.x = constrain(pos.x, topRad, width-topRad);
+    //pos.y = constrain(pos.y, topRad, height-topRad);
   }
   void drawUpdate() {
     pushMatrix();

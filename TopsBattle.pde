@@ -8,6 +8,9 @@ ControlDevice stick;
 DyTop[] top = new DyTop[2];
 TopTools topTools;
 
+PVector centerPos;
+float boardRad;
+
 PVector inputP1 = new PVector(0, 0);
 PVector inputP2 = new PVector(0, 0);
 TopsBoard topsBoard;
@@ -15,7 +18,10 @@ TopsBoard topsBoard;
 void setup() {
   size(1400, 900, P2D);
   surface.setTitle("팽이게임");
-
+  
+  centerPos = new PVector(width/2, height/2, 0);
+  boardRad = height/2;
+  
   control = ControlIO.getInstance(this);
   stick = null;
   top[0] = new DyTop(0, new PVector(width/4, height/2));
@@ -96,13 +102,29 @@ void keyReleased() {
   top[0].setUserForce(inputP1.x, inputP1.y);
   top[1].setUserForce(inputP2.x, inputP2.y);
 }
-
-
-void draw() {
-  background(255);
+void collisionDetect() {
+  PVector betweenVec = top[0].pos.copy();
+  betweenVec.sub(top[1].pos);
+  
+  if(betweenVec.mag() < top[0].topRad + top[1].topRad) { //<>//
+    top[0].collidesWidth(top[0]);
+    top[1].collidesWidth(top[1]);
+  }
+}
+void gameUpdate() {
+  background(255); 
   topsBoard.draw();
+  
   updateGamePadInput();
+  
+  collisionDetect();
+  
   top[0].update();
   top[1].update();
-  println(inputP1);
+}
+  
+
+void draw() {
+  
+  gameUpdate();
 }
