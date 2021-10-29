@@ -26,7 +26,21 @@ void setup() {
   stick = null;
   top[0] = new DyTop(0, new PVector(width/4, height/2));
   top[1] = new DyTop(1, new PVector(width/4*3, height/2));
+  top[0].setImage(1);
+  top[1].setImage(2);
   topsBoard = new TopsBoard(height/2);
+}
+
+void setStick() {
+  stick = control.filter(GCP.STICK).getMatchedDevice("joystick");
+  if (stick == null) {
+    println("No suitable device configured");
+    System.exit(-1); // End the program NOW!
+  }
+  println(stick);
+  stick.setTolerance(0.2);
+  stick.getButton(4).plug(this, "dashPressedP1", ControlIO.ON_PRESS);
+  stick.getButton(4).plug(this, "dashPressedP2", ControlIO.ON_PRESS);
 }
 
 void updateGamePadInput() {
@@ -36,23 +50,14 @@ void updateGamePadInput() {
 
     inputP2.x = map(stick.getSlider(3).getValue(), -1, 1, -1, 1);
     inputP2.y = map(stick.getSlider(2).getValue(), -1, 1, -1, 1);
-
-    top[0].setUserForce(inputP1.x, inputP1.y);
-    top[1].setUserForce(inputP2.x, inputP2.y);
   }
 }
-void dashPressed() {
+
+void dashPressedP1() {
   println("dash");
 }
-void setStick() {
-  stick = control.filter(GCP.GAMEPAD).getMatchedDevice("joystick");
-  if (stick == null) {
-    println("No suitable device configured");
-    System.exit(-1); // End the program NOW!
-  }
-  println(stick);
-  stick.setTolerance(0.2);
-  stick.getButton(4).plug(this, "dashPressed", ControlIO.ON_PRESS);
+void dashPressedP2() {
+  println("dash2");
 }
 void keyPressed() {
   if (key == CODED) {
@@ -82,9 +87,8 @@ void keyPressed() {
       inputP1.x = 1;
     }
   }
-  top[0].setUserForce(inputP1.x, inputP1.y);
-  top[1].setUserForce(inputP2.x, inputP2.y);
 }
+
 void keyReleased() {
   if (key == CODED) {
     if (keyCode == UP || keyCode  == DOWN) {
@@ -99,18 +103,18 @@ void keyReleased() {
       inputP1.x = 0;
     }
   }
-  top[0].setUserForce(inputP1.x, inputP1.y);
-  top[1].setUserForce(inputP2.x, inputP2.y);
 }
+
 void collisionDetect() {
   PVector betweenVec = top[0].pos.copy();
   betweenVec.sub(top[1].pos);
   
   if(betweenVec.mag() < top[0].topRad + top[1].topRad) { //<>//
-    top[0].collidesWidth(top[0]);
-    top[1].collidesWidth(top[1]);
+    top[0].collidesWidth(top[1]);
+    top[1].collidesWidth(top[0]);
   }
 }
+
 void gameUpdate() {
   background(255); 
   topsBoard.draw();
@@ -119,6 +123,8 @@ void gameUpdate() {
   
   collisionDetect();
   
+  top[0].dirInput(inputP1.x, inputP1.y);
+  top[1].dirInput(inputP2.x, inputP2.y);
   top[0].update();
   top[1].update();
 }
