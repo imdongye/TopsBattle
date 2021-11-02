@@ -8,19 +8,21 @@ PGraphics topimg4;
 int choice = 0;
 PFont logo;
 PFont settop;
-PFont manual;
+PImage manual;
+boolean ifmanual = false;
 
 void setup(){
   size(1400, 900);
   intro = new Movie(this, "intro.mp4");
   intro.loop();
   logo = createFont("HY얕은샘물M", 20);
-  manual = createFont("함초롬바탕", 30);
+  settop = createFont("함초롬바탕", 30);
   
   topimg1 = createGraphics(200, 200);
   topimg2 = createGraphics(200, 200);
   topimg3 = createGraphics(200, 200);
   topimg4 = createGraphics(200, 200);
+  manual = loadImage("manual.jpg");
 }
 
 void draw() {
@@ -45,22 +47,25 @@ void draw() {
   image(topimg3, width/5*3, height/10*8.5);
   image(topimg4, width/5*4, height/10*8.5);
   
-  font();
-  
   setTopGraphics00(topimg1);
   setTopGraphics01(topimg2);
   setTopGraphics02(topimg3);
   setTopGraphics03(topimg4);
-    
+  
+   font();
+  
+  if(ifmanual){
+    imageMode(CENTER);
+    image(manual, width/2, height/2);
+  }
 }
 
 void font() {
   textFont(logo, 200);
   fill(255, 50, 0);
   text("TOPS BATTLE", width/2-400, height/2+50);
-  
    if(frameCount %40 <= 20){
-  textFont(manual, 30);
+  textFont(settop, 30);
   fill(255);
   text("Select Your Top", width/2-140, height/2+190);
   }
@@ -85,6 +90,16 @@ void keyPressed() {
       choice--;
     }
   }
+  
+  else if(key == 'h'){
+    if(!ifmanual){
+      ifmanual = true;
+    }
+    else{
+      ifmanual = false;
+    }
+  }
+  
   else if(key == ' '){
     //game start
   }
