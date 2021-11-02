@@ -19,11 +19,11 @@ class TopsBoard {
         if (d <= rad) {
           float tem = map(d, 0, rad, sin(3*PI/2), sin(2*PI));
           float colortem = map(tem, -1, 0, 0, 170);
-          back = color(colortem, 0, 0);
+          back = color(0, colortem, colortem);
           board.pixels[loc] = back;
           for (int k = 0; k*20<=rad; k++) {
             if (rad/20*k <= d && d <= rad/20*k+1) {
-              board.pixels[loc] = color(colortem-10, 0, 0);
+              board.pixels[loc] = color(0, colortem-10, colortem-10);
             }
           }
         } else {
@@ -38,9 +38,13 @@ class TopsBoard {
 
   void draw() {
     pushMatrix();
+    noFill();
+    strokeWeight(5);
+    stroke(0);
     translate(width/2, height/2);
     imageMode(CENTER);
     image(board, 0, 0);
+    circle(0,0,rad*2);
     popMatrix();
   }
   float distance(float cw, float ch, float x, float y) {
