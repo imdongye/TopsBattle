@@ -128,18 +128,12 @@ void keyReleased() {
   }
 }
 
-boolean collisionDetect() {
-  PVector betweenVec = top0.pos.copy();
-  betweenVec.sub(top1.pos);
-
-  return (betweenVec.mag() < top0.topRad + top1.topRad);
-}
 
 void uiUpdate() {
   background(255);
   fill(255);
   topsBoard.draw();
-  
+
   // <player0>
   textAlign(LEFT);
   textFont(mainFont, 50);
@@ -170,10 +164,10 @@ void uiUpdate() {
   strokeWeight(7);
   circle(0, 0, 140);
   popMatrix();
-  for(int i = 0; i < top0.heart; i++) {
+  for (int i = 0; i < top0.heart; i++) {
     image(hImg, 100+i*60, height - 200);
   }
-  
+
   // <player1>
   textFont(mainFont, 50);
   fill(0);
@@ -203,31 +197,60 @@ void uiUpdate() {
   strokeWeight(7);
   circle(0, 0, 140);
   popMatrix();
-  
+
   String scoreText = String.format("%d : %d", top0.score, top1.score);
   textAlign(CENTER);
   textFont(mainFont, 170);
   fill(color(255, 255, 255, 85));
   text(scoreText, width/2, height/4);
-  for(int i = 0; i < top1.heart; i++) {
+  for (int i = 0; i < top1.heart; i++) {
     image(hImg, width -100-i*60, height - 200);
   }
 }
+
+
+boolean collisionDetect() {
+  if (top0.dieStartTime + top0.dieStartTime> 0) return false;
+  PVector betweenVec = top0.pos.copy();
+  betweenVec.sub(top1.pos);
+
+  return (betweenVec.mag() < top0.topRad + top1.topRad);
+}
+
 
 void gameUpdate() {
   updateGamePadInput();
 
   //collision
   if (collisionDetect()) {
-    float top0bv = top1.vel.mag() * top0.bounceRelativeRate + top0.bounceBasics;
-    float top1bv = top0.vel.mag() * top1.bounceRelativeRate + top1.bounceBasics;
-    PVector direct = PVector.sub(top1.vel, top0.vel);
-    direct.normalize();
+    PVector eachDir = PVector.sub(top1.pos, top0.pos);
+    eachDir.normalize();
+    float wt0 = PVector.dot(eachDir, top0.vel);
+    eachDir.mult(-1);
+    float wt1 = PVector.dot(eachDir, top1.vel);
+    if (wt0+wt1 > 0) {
+      float top0bv = top1.vel.mag() * top0.bounceRelativeRate + top0.bounceBasics;
+      float top1bv = top0.vel.mag() * top1.bounceRelativeRate + top1.bounceBasics;
+      PVector direct = PVector.sub(top1.vel, top0.vel);
+      direct.normalize();
 
-    top0.bounce(PVector.mult(direct, top0bv));
-    top1.bounce(PVector.mult(direct, top1bv*-1));
+      top0.bounce(PVector.mult(direct, top0bv));
+      top1.bounce(PVector.mult(direct, top1bv*-1));
+    }
   }
-
+  if (top0.heart < 1) {
+    top1.score++;
+    top0.heart = 3;
+    top0.reset();
+    top1.heart = 3;
+    top1.reset();
+  } else if (top1.heart < 1) {
+    top1.score++;
+    top0.heart = 3;
+    top0.reset();
+    top1.heart = 3;
+    top1.reset();
+  }
   top0.dirInput(inputP1.x, inputP1.y);
   top1.dirInput(inputP2.x, inputP2.y);
   top0.update();

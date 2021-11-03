@@ -16,35 +16,38 @@ class DyTop {
   final float dashVelMag = 35;
   final float risistance = 0.01;
   final float mass = 1;
-  final float gatherForce = 0.5;
-  final float bounceRelativeRate = 0.97;
-  final float bounceBasics = 1.1;
+  final float gatherForce = 0.4;
+  final float bounceRelativeRate = 1;
+  final float bounceBasics = 1.06;
 
-  final int dashTime = 130;
+  final int dashTime = 160;
   final int coolTime = 2000;
   final float rotSpd = 0.21;
   float rot = 0;
-  
+
   int heart = 3;
   int score = 0;
 
   // state
   int dashStartTime = -1;
   boolean isBounce = true;
-  boolean dashCoolOn = true;
   int coolStartTime = -1;
-  
+  final float dieTime = 1500;
+  float dieStartTime = -1;
+  PVector startPos;
+
   int imgN = 1;
 
 
   DyTop(int _id, PVector _pos) {
+    startPos = _pos.copy();
     id = _id;
     topImg = createGraphics(topRad*2, topRad*2);
     //set top image
     TopTools.setTopGrapics01(topImg);
     pos.set(_pos);
   }
-  
+
   void setImage(int n) {
     imgN = n;
     switch(n) {
@@ -62,8 +65,8 @@ class DyTop {
       break;
     }
   }
-  
-  private void fencingPos() {
+
+  private boolean fencingPos() {
     float boardFence = boardRad - topRad/2;
 
     PVector dirVec = pos.copy();
@@ -71,15 +74,29 @@ class DyTop {
 
     if (dirVec.mag() > boardFence) {
       dirVec.normalize();
+
+      // die Check
+      //float outForceVel = PVector.dot(vel, dirVec);
+      float outForceVel = vel.mag();
+      if (outForceVel > dashVelMag*1.01) {
+        heart--;
+        dieStartTime = millis();
+        vel.normalize();
+        vel.mult(0.8);
+        return true;
+      }
+
       pos = dirVec.copy();
       pos.mult(boardFence);
       pos.add(centerPos);
 
-      dirVec.mult(-1*dirVec.dot(vel));
+      dirVec.mult(-1.1*dirVec.dot(vel));
       vel.add(dirVec);
+      vel.mult(0.7);
     }
+    return false;
   }
-  
+
   void bounce(PVector _vel) {
     isBounce = true;
     dashStartTime = -1;
@@ -97,13 +114,30 @@ class DyTop {
     vel.add(stof);
   }
 
+  void reset() {
+    pos.set(startPos);
+    dieStartTime = -1;
+    dashStartTime = -1;
+    coolStartTime = -1;
+    vel.mult(0);
+    acc.mult(0);
+    isBounce = false;
+  }
+
   void physicsUpdate()
   {
+    // State : die
+    if (dieStartTime > 0) {
+      if (millis() - dieStartTime > dieTime) {
+        dieStartTime = -1;
+        reset();
+      }
+    }
     // State : Move
-    if (dashStartTime < 0) {
+    else if (dashStartTime < 0) {
       // cool time update
-      if(coolStartTime > 0) {
-        if(millis() - coolStartTime > coolTime)
+      if (coolStartTime > 0) {
+        if (millis() - coolStartTime > coolTime)
           coolStartTime = -1;
       }
       // -force
@@ -115,26 +149,35 @@ class DyTop {
       gather.normalize();
       gather.mult(gatherForce);
       addForce(gather);
-      
+
       // risistance
       PVector ristcV = vel.copy();
       ristcV.normalize();
       ristcV.mult(-1*risistance);
       if (isBounce)
-        ristcV.mult(1.6);
+        ristcV.mult(1.5);
       addForce(ristcV);
 
 
       acc = force.div(mass).copy();
+      if (isBounce) {
+        PVector noPlus = vel.copy();
+        noPlus.normalize();
+        float dd = noPlus.dot(acc);
+        if (dd > 0) {
+          noPlus = noPlus.mult(dd);
+          acc.sub(noPlus);
+        }
+      }
       vel.add(PVector.mult(acc, 0.035*deltaTime));
 
       if (isBounce == false && vel.mag() > velMagLimit) {
         vel.setMag(velMagLimit);
-      } else if(isBounce == true && vel.mag() < velMagLimit) {
+      } else if (isBounce == true && vel.mag() < velMagLimit) {
         isBounce = false;
       }
-
       pos.add(PVector.mult(vel, 0.05*deltaTime));
+      fencingPos();
     }
     // State : Dash
     else {
@@ -144,8 +187,9 @@ class DyTop {
       } else {
         pos.add(vel);
       }
+      fencingPos();
     }
-    fencingPos();
+    
   }
 
   void drawUpdate() {
@@ -153,6 +197,11 @@ class DyTop {
     pushMatrix();
     translate(pos.x, pos.y);
     rotate(rot);
+    if (dieStartTime > 0) {
+      pos.add(vel);
+      float s = 1-(millis()-dieStartTime)/dieTime;
+      scale(s);
+    }
     imageMode(CENTER);
     image(topImg, 0, 0);
     popMatrix();
@@ -164,12 +213,14 @@ class DyTop {
   }
 
   void dash() {
+    final float originRate = 0.1;
     if (userForce.magSq() < 0.1 || dashStartTime > 0 || coolStartTime > 0)
       return;
     coolStartTime = millis();
     dashStartTime = millis();
-    vel = userForce.normalize().copy();
-    vel.mult(dashVelMag);
+    float originVelLength = vel.dot(userForce);
+    vel = userForce.copy();
+    vel.mult(dashVelMag+originVelLength*originRate);
   }
 
   void addForce(PVector a) {
