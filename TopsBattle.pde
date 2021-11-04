@@ -25,6 +25,7 @@ float deltaTime = 0;
 PFont mainFont;
 PImage hImg;
 SoundFile bgm;
+HighPass highP;
 SoundFile[] coliSnd = new SoundFile[5];
 SoundFile[] dashSnd = new SoundFile[2];
 SoundFile fallSnd;
@@ -36,7 +37,7 @@ Movie i_movie;
 PImage backImg;
 
 Item item;
-int itemCoolStartTime = 1;
+int itemCoolStartTime = -1;
 int itemCoolTime = 9000;
 
 
@@ -59,6 +60,9 @@ void setup() {
   prevMillis = millis();
   bgm = new SoundFile(this, "sound/song.mp3");
   bgm.loop();
+  highP = new HighPass(this);
+  highP.freq(700);
+  highP.process(bgm);
   coliSnd[0] = new SoundFile(this, "sound/coli1.mp3");
   coliSnd[1] = new SoundFile(this, "sound/coli2.mp3");
   coliSnd[2] = new SoundFile(this, "sound/coli3.mp3");
@@ -89,7 +93,7 @@ void setStick() {
   println(stick);
   stick.setTolerance(0.2);
   stick.getButton(4).plug(this, "dashPressedP0", ControlIO.ON_PRESS);
-  stick.getButton(4).plug(this, "dashPressedP1", ControlIO.ON_PRESS);
+  stick.getButton(5).plug(this, "dashPressedP1", ControlIO.ON_PRESS);
 }
 
 void updateGamePadInput() {
@@ -113,6 +117,7 @@ void keyPressed() {
     intro.i_key_pressed();
     // start key
     if (key == ' ') {
+      highP.stop();
       startSnd.play();
       top0.setImage(intro.choice1+1);
       top1.setImage(intro.choice2+1);
@@ -123,7 +128,8 @@ void keyPressed() {
       top1.reset();
       top1.score=0;
       intro = null;
-      itemCoolStartTime = 1;
+      item = null;
+      itemCoolStartTime = millis();
     } else if (key == 'x') {
       if ( stick != null) stick = null;
       else {
@@ -165,6 +171,7 @@ void keyPressed() {
       setStick();
     }
   } else if (key == 'r') {
+    highP.process(bgm);
     intro = new IntroScene();
     i_movie.loop();
   }
@@ -313,7 +320,7 @@ void gameUpdate() {
   int iddd = itemDetect();
   //collision
   if (collisionDetect()) {
-    coliSnd[(int)random(0, 5)].play();
+    coliSnd[(int)random(0, 4)].play();
     PVector eachDir = PVector.sub(top1.pos, top0.pos);
     eachDir.normalize();
     float wt0 = PVector.dot(eachDir, top0.vel);
@@ -347,7 +354,7 @@ void gameUpdate() {
     top1.reset();
     startSnd.play();
   } else if (top1.heart < 1) {
-    top1.score++;
+    top0.score++;
     top0.heart = 3;
     top0.reset();
     top1.heart = 3;
@@ -355,7 +362,7 @@ void gameUpdate() {
     startSnd.play();
   }
   top0.dirInput(inputP1.x+joyP1.x, inputP1.y+joyP1.y);
-  top1.dirInput(inputP2.x+joyP2.y, inputP2.y+joyP2.y);
+  top1.dirInput(inputP2.x+joyP2.x, inputP2.y+joyP2.y);
   
   if(item != null) item.update();
   if(itemCoolStartTime > 0) {

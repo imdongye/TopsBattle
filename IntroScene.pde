@@ -55,6 +55,7 @@ class IntroScene {
   void font() {
     textFont(logo, 200);
     fill(45, 200, 180);
+    textAlign(LEFT);
     text("TOPS BATTLE", width/2-400, height/2+50);
     textFont(logo, 25);
     fill(255);
@@ -62,7 +63,7 @@ class IntroScene {
     text("c key : credit", width*8/10, height*1/13+40);
     text("x key : gamepad setting", width*8/10, height*1/13+80);
     text("player 1 : red circle", width*8/10, height*1/13+120);
-    text("player 1 : blue circle", width*8/10, height*1/13+160);
+    text("player 2 : blue circle", width*8/10, height*1/13+160);
 
     if (frameCount %40 <= 20) {
       textFont(logo, 40);

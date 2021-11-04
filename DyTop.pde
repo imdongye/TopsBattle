@@ -8,7 +8,7 @@ class DyTop {
   PVector userForce = new PVector();
 
   PGraphics topImg = null;
-  int topRad = 40;
+  int topRad = 34;
   
   Tail tail;
 

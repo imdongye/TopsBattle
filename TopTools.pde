@@ -23,7 +23,7 @@ public interface TopTools {
     pg.rectMode(CENTER);
 
     pg.translate(pg.width/2, pg.height/2);
-    float s = pg.width/25;
+    float s = pg.width/19;
 
     //edit down hear//
     pg.fill(0, 0, 150);
@@ -101,7 +101,7 @@ public interface TopTools {
     pg.rectMode(CENTER);
 
     pg.translate(pg.width/2, pg.height/2);
-    float s = pg.width/25;
+    float s = pg.width/19;
 
     //edit down hear//
     pg.fill(250, 80, 0);
