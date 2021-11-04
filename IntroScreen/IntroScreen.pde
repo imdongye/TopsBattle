@@ -9,6 +9,8 @@ int choice1 = 0;//player1 팽이 선택
 int choice2 = 3;//player2 팽이 선택
 PFont logo;
 PImage manual;//설명서
+PImage credit;
+boolean ifcredit = false;
 boolean ifmanual = false;
 
 void setup() {
@@ -21,7 +23,9 @@ void setup() {
   topimg2 = createGraphics(200, 200);
   topimg3 = createGraphics(200, 200);
   topimg4 = createGraphics(200, 200);
+  
   manual = loadImage("manual.jpg");
+  credit = loadImage("credit.jpg");
 }
 
 void draw() {
@@ -58,6 +62,11 @@ void draw() {
     imageMode(CENTER);
     image(manual, width/2, height/2);
   }
+  
+  if(ifcredit) {
+    imageMode(CENTER);
+    image(credit, width/2, height/2);
+  }
 }
 
 void font() {
@@ -67,6 +76,7 @@ void font() {
   textFont(logo, 25);
   fill(255);
   text("h key : help", width*8.5/10, height*1/13);
+  text("c key : credit", width*8.5/10, height*1.5/13);
 
   if (frameCount %40 <= 20) {
     textFont(logo, 40);
@@ -101,8 +111,16 @@ void keyPressed() {
   } else if (key == 'h') {
     if (!ifmanual) {
       ifmanual = true;
+      ifcredit = false;
     } else {
       ifmanual = false;
+    }
+  } else if (key == 'c'){
+    if(!ifcredit) {
+      ifcredit = true;
+      ifmanual = false;
+    } else {
+      ifcredit = false;
     }
   } else if (key == ' ') {
     //game start
