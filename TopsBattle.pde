@@ -1,6 +1,8 @@
 import org.gamecontrolplus.gui.*; //<>//
 import org.gamecontrolplus.*;
 import net.java.games.input.*;
+import processing.sound.*;
+import processing.video.*;
 
 ControlIO control;
 ControlDevice stick;
@@ -11,6 +13,8 @@ TopTools topTools;
 PVector centerPos;
 int boardRad;
 
+PVector joyP1 = new PVector(0, 0);
+PVector joyP2 = new PVector(0, 0);
 PVector inputP1 = new PVector(0, 0);
 PVector inputP2 = new PVector(0, 0);
 TopsBoard topsBoard;
@@ -20,9 +24,19 @@ float deltaTime = 0;
 
 PFont mainFont;
 PImage hImg;
+SoundFile bgm;
+SoundFile[] coliSnd = new SoundFile[5];
+SoundFile[] dashSnd = new SoundFile[2];
+SoundFile fallSnd;
+SoundFile itemSnd;
+SoundFile startSnd;
+
+IntroScene intro;
+Movie i_movie;
+
 
 void setup() {
-  size(1400, 900, P2D);
+  size(1400, 900);
   smooth(2);
   surface.setTitle("팽이게임");
   mainFont = createFont("ail.ttf", 200);
@@ -38,6 +52,25 @@ void setup() {
   top1.setImage(2);
   topsBoard = new TopsBoard(boardRad);
   prevMillis = millis();
+  bgm = new SoundFile(this, "sound/song.mp3");
+  bgm.loop();
+  coliSnd[0] = new SoundFile(this, "sound/coli1.mp3");
+  coliSnd[1] = new SoundFile(this, "sound/coli2.mp3");
+  coliSnd[2] = new SoundFile(this, "sound/coli3.mp3");
+  coliSnd[3] = new SoundFile(this, "sound/coli4.mp3");
+  coliSnd[4] = new SoundFile(this, "sound/coli5.mp3");
+  dashSnd[0] = new SoundFile(this, "sound/dash1.mp3");
+  dashSnd[1] = new SoundFile(this, "sound/dash2.mp3");
+  fallSnd = new SoundFile(this, "sound/fall.wav");
+  itemSnd = new SoundFile(this, "sound/item.wav");
+  startSnd = new SoundFile(this, "sound/start.mp3");
+  intro = new IntroScene();
+  i_movie = new Movie(this, "intro.mp4");
+  i_movie.loop();
+}
+
+void movieEvent(Movie movie) {
+  movie.read();
 }
 
 void setStick() {
@@ -54,11 +87,11 @@ void setStick() {
 
 void updateGamePadInput() {
   if (stick != null) {
-    inputP1.x = map(stick.getSlider(1).getValue(), -1, 1, -1, 1);
-    inputP1.y = map(stick.getSlider(0).getValue(), -1, 1, -1, 1);
+    joyP1.x = map(stick.getSlider(1).getValue(), -1, 1, -1, 1);
+    joyP1.y = map(stick.getSlider(0).getValue(), -1, 1, -1, 1);
 
-    inputP2.x = map(stick.getSlider(3).getValue(), -1, 1, -1, 1);
-    inputP2.y = map(stick.getSlider(2).getValue(), -1, 1, -1, 1);
+    joyP2.x = map(stick.getSlider(3).getValue(), -1, 1, -1, 1);
+    joyP2.y = map(stick.getSlider(2).getValue(), -1, 1, -1, 1);
   }
 }
 
@@ -69,6 +102,19 @@ void dashPressedP1() {
   top1.dash();
 }
 void keyPressed() {
+  if (intro != null) {
+    intro.i_key_pressed();
+    if (key == ' ') {
+      intro = null;
+      startSnd.play();
+    } else if (key == 'x') {
+      if ( stick != null) stick = null;
+      else {
+        setStick();
+      }
+    }
+    return;
+  }
   // dir input
   if (key == CODED) {
     if (keyCode == UP) {
@@ -223,6 +269,7 @@ void gameUpdate() {
 
   //collision
   if (collisionDetect()) {
+    coliSnd[(int)random(0, 5)].play();
     PVector eachDir = PVector.sub(top1.pos, top0.pos);
     eachDir.normalize();
     float wt0 = PVector.dot(eachDir, top0.vel);
@@ -244,15 +291,17 @@ void gameUpdate() {
     top0.reset();
     top1.heart = 3;
     top1.reset();
+    startSnd.play();
   } else if (top1.heart < 1) {
     top1.score++;
     top0.heart = 3;
     top0.reset();
     top1.heart = 3;
     top1.reset();
+    startSnd.play();
   }
-  top0.dirInput(inputP1.x, inputP1.y);
-  top1.dirInput(inputP2.x, inputP2.y);
+  top0.dirInput(inputP1.x+joyP1.x, inputP1.y+joyP1.y);
+  top1.dirInput(inputP2.x+joyP2.y, inputP2.y+joyP2.y);
   top0.update();
   top1.update();
 }
@@ -261,6 +310,17 @@ void gameUpdate() {
 void draw() {
   deltaTime = millis() - prevMillis;
   prevMillis = millis();
+  if (intro != null) {
+    image(i_movie, width/2, height/2, width, height);
+    if (i_movie.duration()-1 < i_movie.time()) {
+      println(i_movie.duration());
+      i_movie.speed(-1);
+    } else if ( i_movie.time() < 1) {
+      i_movie.speed(1);
+    }
+    intro.i_draw();
+    return;
+  }
   uiUpdate();
   gameUpdate();
 }

@@ -9,6 +9,8 @@ class DyTop {
 
   PGraphics topImg = null;
   int topRad = 40;
+  
+  Tail tail;
 
   // physics const
   final float moveSpeed = 1;
@@ -25,6 +27,7 @@ class DyTop {
   final float rotSpd = 0.21;
   float rot = 0;
 
+  PVector collipoint = new PVector();
   int heart = 3;
   int score = 0;
 
@@ -45,7 +48,8 @@ class DyTop {
     topImg = createGraphics(topRad*2, topRad*2);
     //set top image
     TopTools.setTopGrapics01(topImg);
-    pos.set(_pos);
+    tail = new Tail(topImg);
+    reset();
   }
 
   void setImage(int n) {
@@ -77,20 +81,29 @@ class DyTop {
 
       // die Check
       //float outForceVel = PVector.dot(vel, dirVec);
-      float outForceVel = vel.mag();
-      if (outForceVel > dashVelMag*1.01) {
-        heart--;
-        dieStartTime = millis();
-        vel.normalize();
-        vel.mult(0.8);
-        return true;
+      //float outForceVel = vel.mag();
+      //if (outForceVel > dashVelMag*0.98) {
+      if (collipoint.x>0) {
+        collipoint.sub(pos);
+        float threshold = (float)boardRad/1.8;
+        println(collipoint.mag(), threshold);
+        if ((isBounce && collipoint.mag() < threshold)|| dashStartTime > 0) {
+          collipoint.set(-1, -1);
+          heart--;
+          fallSnd.play();
+          dieStartTime = millis();
+          vel.normalize();
+          vel.mult(0.8);
+          return true;
+        }
       }
-
+      
+      collipoint.set(-1,-1);
       pos = dirVec.copy();
       pos.mult(boardFence);
       pos.add(centerPos);
 
-      dirVec.mult(-1.1*dirVec.dot(vel));
+      dirVec.mult(-1.2*dirVec.dot(vel));
       vel.add(dirVec);
       vel.mult(0.7);
     }
@@ -100,6 +113,10 @@ class DyTop {
   void bounce(PVector _vel) {
     isBounce = true;
     dashStartTime = -1;
+    if(_vel.mag() > bounceBasics + velMagLimit)
+      collipoint = pos.copy();
+    else
+      collipoint.set(-1,-1);
     vel = _vel.copy();
     vel.div(mass);
   }
@@ -121,6 +138,7 @@ class DyTop {
     coolStartTime = -1;
     vel.mult(0);
     acc.mult(0);
+    collipoint.set(-1, -1);
     isBounce = false;
   }
 
@@ -129,6 +147,7 @@ class DyTop {
     // State : die
     if (dieStartTime > 0) {
       if (millis() - dieStartTime > dieTime) {
+        startSnd.play();
         dieStartTime = -1;
         reset();
       }
@@ -189,22 +208,24 @@ class DyTop {
       }
       fencingPos();
     }
-    
   }
 
   void drawUpdate() {
     rot += rotSpd;
     pushMatrix();
     translate(pos.x, pos.y);
-    rotate(rot);
+    // die effect
     if (dieStartTime > 0) {
       pos.add(vel);
       float s = 1-(millis()-dieStartTime)/dieTime;
       scale(s);
     }
+    rotate(rot);
     imageMode(CENTER);
     image(topImg, 0, 0);
     popMatrix();
+    
+    tail.update(pos.copy(), rot);
   }
 
   void update() {
@@ -214,8 +235,10 @@ class DyTop {
 
   void dash() {
     final float originRate = 0.1;
-    if (userForce.magSq() < 0.1 || dashStartTime > 0 || coolStartTime > 0)
+    if (isBounce || userForce.magSq() < 0.1 || dashStartTime > 0 || coolStartTime > 0)
       return;
+    collipoint = pos.copy();
+    dashSnd[0].play();
     coolStartTime = millis();
     dashStartTime = millis();
     float originVelLength = vel.dot(userForce);
