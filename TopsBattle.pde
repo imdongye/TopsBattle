@@ -33,10 +33,11 @@ SoundFile startSnd;
 
 IntroScene intro;
 Movie i_movie;
+PImage backImg;
 
 
 void setup() {
-  size(1400, 900);
+  size(1400, 900, P2D);
   smooth(2);
   surface.setTitle("팽이게임");
   mainFont = createFont("ail.ttf", 200);
@@ -67,6 +68,7 @@ void setup() {
   intro = new IntroScene();
   i_movie = new Movie(this, "intro.mp4");
   i_movie.loop();
+  backImg = loadImage("back.png");
 }
 
 void movieEvent(Movie movie) {
@@ -104,9 +106,18 @@ void dashPressedP1() {
 void keyPressed() {
   if (intro != null) {
     intro.i_key_pressed();
+    // start key
     if (key == ' ') {
-      intro = null;
       startSnd.play();
+      top0.setImage(intro.choice1+1);
+      top1.setImage(intro.choice2+1);
+      top0.heart = 3;
+      top0.reset();
+      top0.score = 0;
+      top1.heart = 3;
+      top1.reset();
+      top1.score=0;
+      intro = null;
     } else if (key == 'x') {
       if ( stick != null) stick = null;
       else {
@@ -147,6 +158,9 @@ void keyPressed() {
     else {
       setStick();
     }
+  } else if (key == 'r') {
+    intro = new IntroScene();
+    i_movie.loop();
   }
 }
 
@@ -176,14 +190,14 @@ void keyReleased() {
 
 
 void uiUpdate() {
-  background(255);
+  image(backImg, width/2,height/2,width, height);
   fill(255);
   topsBoard.draw();
 
   // <player0>
   textAlign(LEFT);
   textFont(mainFont, 50);
-  fill(0);
+  fill(240);
   text("Player 1", 20+47, 80);
   // top img
   pushMatrix();
@@ -216,7 +230,7 @@ void uiUpdate() {
 
   // <player1>
   textFont(mainFont, 50);
-  fill(0);
+  fill(240);
   text("Player 2", width-(240), 80);
   // top img
   pushMatrix();
@@ -252,6 +266,10 @@ void uiUpdate() {
   for (int i = 0; i < top1.heart; i++) {
     image(hImg, width -100-i*60, height - 200);
   }
+  
+  textFont(mainFont, 20);
+  fill(240);
+  text("R : go to intro", width-120, height -40);
 }
 
 

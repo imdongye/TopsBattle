@@ -16,7 +16,7 @@ class IntroScene {
   }
 
   void i_setup() {
-    logo = createFont("HY얕은샘물M", 20);
+    logo = createFont("HY얕은샘물M", 150);
 
     topimg1 = createGraphics(200, 200);
     topimg2 = createGraphics(200, 200);
@@ -61,6 +61,8 @@ class IntroScene {
     text("h key : help", width*8/10, height*1/13);
     text("c key : credit", width*8/10, height*1/13+40);
     text("x key : gamepad setting", width*8/10, height*1/13+80);
+    text("player 1 : red circle", width*8/10, height*1/13+120);
+    text("player 1 : blue circle", width*8/10, height*1/13+160);
 
     if (frameCount %40 <= 20) {
       textFont(logo, 40);
@@ -124,12 +126,10 @@ class IntroScene {
     if (choice1 == 0 || choice2 == 0) {
       pg.noFill();
       s = pg.width/25+0.5;
-      if (choice1 == 0) {
-        pg. stroke(255, 50, 0);
-        pg.ellipse(0, 0, 190, 190);
-      }
-      if (choice2 == 0) {
-        pg. stroke(50, 250, 0);
+      if (choice2 == 0 || choice1 == 0) {
+        float r = (choice1 == 0) ? 250: 50;
+        float b = (choice2 == 0) ? 250: 50;
+        pg. stroke(r, 60, b);
         pg.ellipse(0, 0, 190, 190);
       }
     }
@@ -218,18 +218,12 @@ class IntroScene {
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
-    if (choice1 == 1 || choice2 == 1) {
-      pg.noFill();
-      s = pg.width/22+0.5;
-      if (choice1 == 1) {
-        pg. stroke(255, 50, 0);
+    if (choice2 == 1 || choice1 == 1) {
+        float r = (choice1 == 1) ? 250: 50;
+        float b = (choice2 == 1) ? 250: 50;
+        pg. stroke(r, 60, b);
         pg.ellipse(0, 0, 190, 190);
       }
-      if (choice2 == 1) {
-        pg. stroke(50, 250, 0);
-        pg.ellipse(0, 0, 190, 190);
-      }
-    }
     //
 
     pg.strokeWeight(1);
@@ -319,18 +313,12 @@ class IntroScene {
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
-    if (choice1 == 2 || choice2 == 2) {
-      pg.noFill();
-      t = t+5;
-      if (choice1 == 2) {
-        pg. stroke(255, 50, 0);
+    if (choice2 == 2 || choice1 == 2) {
+        float r = (choice1 == 2) ? 250: 50;
+        float b = (choice2 == 2) ? 250: 50;
+        pg. stroke(r, 60, b);
         pg.ellipse(0, 0, 190, 190);
       }
-      if (choice2 == 2) {
-        pg. stroke(50, 250, 0);
-        pg.ellipse(0, 0, 190, 190);
-      }
-    }
     //
 
     //팽이 그래픽
@@ -390,18 +378,12 @@ class IntroScene {
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
-    if (choice1 == 3 || choice2 == 3) {
-      pg.noFill();
-      t = t+7;
-      if (choice1 == 3) {
-        pg. stroke(255, 50, 0);
+    if (choice2 == 3 || choice1 == 3) {
+        float r = (choice1 == 3) ? 250: 50;
+        float b = (choice2 == 3) ? 250: 50;
+        pg. stroke(r, 60, b);
         pg.ellipse(0, 0, 190, 190);
       }
-      if (choice2 == 3) {
-        pg. stroke(50, 250, 0);
-        pg.ellipse(0, 0, 190, 190);
-      }
-    }
 
     //팽이 그래픽
     pg.strokeWeight(1);

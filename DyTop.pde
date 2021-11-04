@@ -54,6 +54,7 @@ class DyTop {
 
   void setImage(int n) {
     imgN = n;
+    topImg.clear();
     switch(n) {
     case 1:
       TopTools.setTopGrapics01(topImg);
@@ -62,10 +63,10 @@ class DyTop {
       TopTools.setTopGrapics02(topImg);
       break;
     case 3:
-      TopTools.setTopGrapics03(topImg);
+      TopTools.setTopGrapics04(topImg);
       break;
     case 4:
-      TopTools.setTopGrapics04(topImg);
+      TopTools.setTopGrapics03(topImg);
       break;
     }
   }

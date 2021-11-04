@@ -6,7 +6,7 @@ class TopsBoard {
 
   TopsBoard(int _rad) {
     rad = _rad;
-    board = createImage(rad*2, rad*2, RGB);
+    board = createImage(rad*2, rad*2, ARGB);
     board.loadPixels();
     float centerw = board.width/2;
     float centerh = board.height/2;
@@ -27,7 +27,7 @@ class TopsBoard {
             }
           }
         } else {
-          back = color(255);
+          back = color(255, 255, 255, 0);
           board.pixels[loc] = back;
         }
       }
