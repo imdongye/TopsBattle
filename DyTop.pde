@@ -15,7 +15,7 @@ class DyTop {
   // physics const
   final float moveSpeed = 1;
   final float velMagLimit = 8;
-  final float dashVelMag = 35;
+  final float dashVelMag = 25;
   final float risistance = 0.01;
   final float mass = 1;
   final float gatherForce = 0.4;
@@ -40,6 +40,8 @@ class DyTop {
   PVector startPos;
 
   int imgN = 1;
+  
+  boolean isItemOn = false;
 
 
   DyTop(int _id, PVector _pos) {
@@ -244,7 +246,12 @@ class DyTop {
     dashStartTime = millis();
     float originVelLength = vel.dot(userForce);
     vel = userForce.copy();
-    vel.mult(dashVelMag+originVelLength*originRate);
+    float velLength = dashVelMag + originVelLength*originRate;
+    if(isItemOn) {
+      velLength +=13;
+      isItemOn = false;
+    }
+    vel.mult(velLength);
   }
 
   void addForce(PVector a) {

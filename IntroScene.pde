@@ -4,13 +4,13 @@ class IntroScene {
   PGraphics topimg3;
   PGraphics topimg4;
   int choice1 = 0;//player1 팽이 선택
-  int choice2 = 3;//player2 팽이 선택
+  int choice2 = 1;//player2 팽이 선택
   PFont logo;
   PImage manual;//설명서
   PImage credit;
   boolean ifcredit = false;
   boolean ifmanual = false;
-  
+
   IntroScene() {
     i_setup();
   }
@@ -76,20 +76,29 @@ class IntroScene {
     if (keyCode == RIGHT) {
       if (choice2 <3) {
         choice2++;
+        itemSnd.play();
       }
     } else if (keyCode == LEFT) {
       if (choice2 >0) {
         choice2--;
+
+        itemSnd.play();
       }
     } else if (key == 'd') {
       if (choice1 <3) {
         choice1++;
+
+        itemSnd.play();
       }
     } else if (key == 'a') {
       if (choice1 >0) {
         choice1--;
+
+        itemSnd.play();
       }
     } else if (key == 'h') {
+
+      coliSnd[0].play();
       if (!ifmanual) {
         ifmanual = true;
         ifcredit = false;
@@ -97,6 +106,8 @@ class IntroScene {
         ifmanual = false;
       }
     } else if (key == 'c') {
+
+      coliSnd[1].play();
       if (!ifcredit) {
         ifcredit = true;
         ifmanual = false;
@@ -119,7 +130,7 @@ class IntroScene {
     //팽이 뒤의 원, 선택되는 그래픽
     float s = pg.width/25;
 
-    pg.strokeWeight(3);
+    pg.strokeWeight(10);
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
@@ -129,7 +140,7 @@ class IntroScene {
       if (choice2 == 0 || choice1 == 0) {
         float r = (choice1 == 0) ? 250: 50;
         float b = (choice2 == 0) ? 250: 50;
-        pg. stroke(r, 60, b);
+        pg.stroke(r, 60, b);
         pg.ellipse(0, 0, 190, 190);
       }
     }
@@ -214,16 +225,16 @@ class IntroScene {
 
     //팽이 뒤의 원, 팽이 선택하는 그래픽
     float s = pg.width/22;
-    pg.strokeWeight(3);
+    pg.strokeWeight(10);
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
     if (choice2 == 1 || choice1 == 1) {
-        float r = (choice1 == 1) ? 250: 50;
-        float b = (choice2 == 1) ? 250: 50;
-        pg. stroke(r, 60, b);
-        pg.ellipse(0, 0, 190, 190);
-      }
+      float r = (choice1 == 1) ? 250: 50;
+      float b = (choice2 == 1) ? 250: 50;
+      pg. stroke(r, 60, b);
+      pg.ellipse(0, 0, 190, 190);
+    }
     //
 
     pg.strokeWeight(1);
@@ -309,16 +320,16 @@ class IntroScene {
     pg.translate(pg.width/2, pg.height/2);
 
     //팽이 뒤의 원, 팽이 선택하는 그래픽
-    pg.strokeWeight(3);
+    pg.strokeWeight(10);
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
     if (choice2 == 2 || choice1 == 2) {
-        float r = (choice1 == 2) ? 250: 50;
-        float b = (choice2 == 2) ? 250: 50;
-        pg. stroke(r, 60, b);
-        pg.ellipse(0, 0, 190, 190);
-      }
+      float r = (choice1 == 2) ? 250: 50;
+      float b = (choice2 == 2) ? 250: 50;
+      pg. stroke(r, 60, b);
+      pg.ellipse(0, 0, 190, 190);
+    }
     //
 
     //팽이 그래픽
@@ -374,16 +385,16 @@ class IntroScene {
     pg.translate(pg.width/2, pg.width/2);
 
     //팽이 뒤의 원, 팽이 선택하는 그래픽
-    pg.strokeWeight(3);
+    pg.strokeWeight(10);
     pg.fill(255);
     pg.ellipse(0, 0, 190, 190);
 
     if (choice2 == 3 || choice1 == 3) {
-        float r = (choice1 == 3) ? 250: 50;
-        float b = (choice2 == 3) ? 250: 50;
-        pg. stroke(r, 60, b);
-        pg.ellipse(0, 0, 190, 190);
-      }
+      float r = (choice1 == 3) ? 250: 50;
+      float b = (choice2 == 3) ? 250: 50;
+      pg. stroke(r, 60, b);
+      pg.ellipse(0, 0, 190, 190);
+    }
 
     //팽이 그래픽
     pg.strokeWeight(1);

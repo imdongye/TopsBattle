@@ -35,6 +35,10 @@ IntroScene intro;
 Movie i_movie;
 PImage backImg;
 
+Item item;
+int itemCoolStartTime = 1;
+int itemCoolTime = 9000;
+
 
 void setup() {
   size(1400, 900, P2D);
@@ -69,6 +73,7 @@ void setup() {
   i_movie = new Movie(this, "intro.mp4");
   i_movie.loop();
   backImg = loadImage("back.png");
+  item = null;
 }
 
 void movieEvent(Movie movie) {
@@ -118,6 +123,7 @@ void keyPressed() {
       top1.reset();
       top1.score=0;
       intro = null;
+      itemCoolStartTime = 1;
     } else if (key == 'x') {
       if ( stick != null) stick = null;
       else {
@@ -216,7 +222,12 @@ void uiUpdate() {
   } else {
     percent0 = (float)(millis() - top0.coolStartTime)/top0.coolTime;
   }
-  fill(color(150*(1-percent0), 240*percent0, 240*(1-percent0*0.5)));
+  
+  if(top0.isItemOn) {
+    fill(color(255*(percent0), 255*percent0, 255*(1-percent0)));
+  } else {
+    fill(color(150*(1-percent0), 240*percent0, 240*(1-percent0*0.5)));
+  }
   circle(0, 0, 140*percent0);
   // dash gauge outside
   stroke(0);
@@ -249,7 +260,12 @@ void uiUpdate() {
   } else {
     percent1 = (float)(millis() - top1.coolStartTime)/top1.coolTime;
   }
-  fill(color(240*(1-percent1*0.5), 150*(1-percent1), 240*percent1));
+  
+  if(top1.isItemOn) {
+    fill(color(255*(percent1), 255*percent1, 255*(1-percent1)));
+  } else {
+    fill(color(240*(1-percent1*0.5), 150*(1-percent1), 240*percent1));
+  }
   circle(0, 0, 140*percent1);
   // dash gauge outside
   stroke(0);
@@ -280,11 +296,21 @@ boolean collisionDetect() {
 
   return (betweenVec.mag() < top0.topRad + top1.topRad);
 }
-
+int itemDetect() {
+  if(item == null) return 0;
+  PVector betweenVec = top0.pos.copy();
+  betweenVec.sub(item.pos);
+  if(betweenVec.mag() < top0.topRad) return 1;
+  betweenVec = top1.pos.copy();
+  betweenVec.sub(item.pos);
+  if(betweenVec.mag() < top0.topRad) return 2;
+  return 0;
+}
 
 void gameUpdate() {
   updateGamePadInput();
 
+  int iddd = itemDetect();
   //collision
   if (collisionDetect()) {
     coliSnd[(int)random(0, 5)].play();
@@ -302,7 +328,17 @@ void gameUpdate() {
       top0.bounce(PVector.mult(direct, top0bv));
       top1.bounce(PVector.mult(direct, top1bv*-1));
     }
+  } else if(iddd >0) {
+    if(iddd == 1)
+      top0.isItemOn = true;
+    else
+      top1.isItemOn = true;
+    itemSnd.play();
+    item = null;
+    itemCoolStartTime = millis();
   }
+  
+  
   if (top0.heart < 1) {
     top1.score++;
     top0.heart = 3;
@@ -320,6 +356,16 @@ void gameUpdate() {
   }
   top0.dirInput(inputP1.x+joyP1.x, inputP1.y+joyP1.y);
   top1.dirInput(inputP2.x+joyP2.y, inputP2.y+joyP2.y);
+  
+  if(item != null) item.update();
+  if(itemCoolStartTime > 0) {
+    if (millis() -itemCoolStartTime > itemCoolTime){
+      println("asdf");
+      itemCoolStartTime = -1;
+      item = new Item(centerPos);
+    }
+  }
+  
   top0.update();
   top1.update();
 }
